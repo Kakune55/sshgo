@@ -13,8 +13,6 @@ import (
 
 // ShowHostSelectionMenu 显示主机选择菜单
 func ShowHostSelectionMenu(hosts []ssh.SSHHost) (ssh.SSHHost, string, error) {
-	// 先显示模糊查找提示
-		fmt.Println("提示: 可以在选择主机时使用模糊查找功能") // TODO: 需要翻译
 	
 	var hostNames []string
 	hostMap := make(map[string]ssh.SSHHost)
@@ -29,8 +27,8 @@ func ShowHostSelectionMenu(hosts []ssh.SSHHost) (ssh.SSHHost, string, error) {
 	}
 	
 	// 添加退出搜索选项
-		hostNames = append([]string{i18n.T(i18n.SearchHostOption)}, hostNames...)
-		hostNames = append([]string{i18n.T(i18n.ExitOption)}, hostNames...)
+	hostNames = append([]string{i18n.T(i18n.ExitOption)}, hostNames...)
+	hostNames = append([]string{i18n.T(i18n.SearchHostOption)}, hostNames...)
 	
 	prompt := promptui.Select{
 			Label: i18n.T(i18n.SelectHostLabel),
@@ -39,7 +37,7 @@ func ShowHostSelectionMenu(hosts []ssh.SSHHost) (ssh.SSHHost, string, error) {
 			Size: 10,
 		}
 	
-	index, result, err := prompt.Run()
+	index, _, err := prompt.Run()
 		if err != nil {
 			if err.Error() == "^C" {
 				return ssh.SSHHost{}, "", fmt.Errorf("interrupt")
@@ -60,12 +58,15 @@ func ShowHostSelectionMenu(hosts []ssh.SSHHost) (ssh.SSHHost, string, error) {
 	}
 	
 	// 如果选择退出
-	if index == len(hostNames)-1 {
+	if index == 1 {
 		return ssh.SSHHost{}, "exit", nil
 	}
 	
-	// 调整索引以匹配主机列表（因为添加了搜索选项）
-	selectedHost := hostMap[result]
+	// 调整索引以匹配主机列表（因为添加了搜索和退出选项）
+	index = index - 2
+	
+	// 获取选中的主机
+	selectedHost := hostMap[hostNames[index+2]]
 	
 	// 显示操作菜单
 	action, err := ShowActionMenu()

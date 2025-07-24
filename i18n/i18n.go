@@ -14,9 +14,6 @@ const (
 	English Language = "en"
 )
 
-// 默认语言
-var defaultLanguage = Chinese
-
 // 当前语言
 var currentLanguage Language
 
@@ -53,15 +50,6 @@ func detectLanguage() Language {
 	return English
 }
 
-// SetLanguage 设置当前语言
-func SetLanguage(lang Language) {
-	currentLanguage = lang
-}
-
-// GetLanguage 获取当前语言
-func GetLanguage() Language {
-	return currentLanguage
-}
 
 // T 获取指定键的翻译字符串
 func T(key StringKey) string {
