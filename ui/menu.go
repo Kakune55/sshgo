@@ -5,6 +5,7 @@ import (
 	"io"
 	"strings"
 
+	"sshgo/i18n"
 	"sshgo/ssh"
 
 	"github.com/manifoldco/promptui"
@@ -13,7 +14,7 @@ import (
 // ShowHostSelectionMenu 显示主机选择菜单
 func ShowHostSelectionMenu(hosts []ssh.SSHHost) (ssh.SSHHost, string, error) {
 	// 先显示模糊查找提示
-	fmt.Println("提示: 可以在选择主机时使用模糊查找功能")
+		fmt.Println("提示: 可以在选择主机时使用模糊查找功能") // TODO: 需要翻译
 	
 	var hostNames []string
 	hostMap := make(map[string]ssh.SSHHost)
@@ -28,15 +29,15 @@ func ShowHostSelectionMenu(hosts []ssh.SSHHost) (ssh.SSHHost, string, error) {
 	}
 	
 	// 添加退出搜索选项
-	hostNames = append([]string{"搜索主机"}, hostNames...)
-	hostNames = append([]string{"退出"}, hostNames...)
+		hostNames = append([]string{i18n.T(i18n.SearchHostOption)}, hostNames...)
+		hostNames = append([]string{i18n.T(i18n.ExitOption)}, hostNames...)
 	
 	prompt := promptui.Select{
-		Label: "选择要连接的主机",
-		Items: hostNames,
-		CursorPos: 2,
-		Size: 10,
-	}
+			Label: i18n.T(i18n.SelectHostLabel),
+			Items: hostNames,
+			CursorPos: 2,
+			Size: 10,
+		}
 	
 	index, result, err := prompt.Run()
 		if err != nil {
@@ -103,9 +104,9 @@ func performFuzzySearch(hosts []ssh.SSHHost) (ssh.SSHHost, string, error) {
 	}
 	
 	// 询问搜索关键词
-	prompt := promptui.Prompt{
-		Label: "请输入搜索关键词",
-	}
+		prompt := promptui.Prompt{
+			Label: i18n.T(i18n.EnterSearchKeyword),
+		}
 	
 	searchTerm, err := prompt.Run()
 		if err != nil {
@@ -127,10 +128,10 @@ func performFuzzySearch(hosts []ssh.SSHHost) (ssh.SSHHost, string, error) {
 	}
 	
 	// 如果没有匹配的主机
-	if len(matchedHostNames) == 0 {
-		fmt.Println("未找到匹配的主机")
-		return ShowHostSelectionMenu(hosts)
-	}
+		if len(matchedHostNames) == 0 {
+			fmt.Println(i18n.T(i18n.NoMatchingHosts))
+			return ShowHostSelectionMenu(hosts)
+		}
 	
 	// 如果只有一个匹配的主机，直接选择它
 	if len(matchedHostNames) == 1 {
@@ -156,13 +157,13 @@ func performFuzzySearch(hosts []ssh.SSHHost) (ssh.SSHHost, string, error) {
 	}
 	
 	// 如果有多个匹配的主机，显示选择菜单
-	matchedHostNames = append(matchedHostNames, "返回")
-	
-	selectPrompt := promptui.Select{
-		Label: "找到多个匹配的主机，请选择",
-		Items: matchedHostNames,
-		Size: 10,
-	}
+		matchedHostNames = append(matchedHostNames, i18n.T(i18n.BackAction))
+		
+		selectPrompt := promptui.Select{
+			Label: i18n.T(i18n.MultipleMatchingHosts),
+			Items: matchedHostNames,
+			Size: 10,
+		}
 	
 	index, result, err := selectPrompt.Run()
 		if err != nil {
@@ -203,10 +204,18 @@ func performFuzzySearch(hosts []ssh.SSHHost) (ssh.SSHHost, string, error) {
 
 // ShowActionMenu 显示操作菜单
 func ShowActionMenu() (string, error) {
-	actions := []string{"连接", "详细信息", "删除密钥文件", "删除配置", "修改用户", "修改端口", "返回"}
+	actions := []string{
+		i18n.T(i18n.ConnectAction),
+		i18n.T(i18n.DetailsAction),
+		i18n.T(i18n.DeleteKeyAction),
+		i18n.T(i18n.DeleteConfigAction),
+		i18n.T(i18n.ModifyUserAction),
+		i18n.T(i18n.ModifyPortAction),
+		i18n.T(i18n.BackAction),
+	}
 	
 	prompt := promptui.Select{
-		Label: "选择操作",
+		Label: i18n.T(i18n.SelectActionLabel),
 		Items: actions,
 		Size: 10,
 	}
@@ -220,40 +229,40 @@ func ShowActionMenu() (string, error) {
 		}
 	
 	switch result {
-	case "连接":
-		return "connect", nil
-	case "详细信息":
-		return "details", nil
-	case "删除密钥文件":
-		return "delete_key", nil
-	case "删除配置":
-		return "delete_config", nil
-	case "修改用户":
-		return "modify_user", nil
-	case "修改端口":
-		return "modify_port", nil
-	case "返回":
-		return "back", fmt.Errorf("返回主菜单")
-	default:
-		return "connect", nil
-	}
+		case i18n.T(i18n.ConnectAction):
+			return "connect", nil
+		case i18n.T(i18n.DetailsAction):
+			return "details", nil
+		case i18n.T(i18n.DeleteKeyAction):
+			return "delete_key", nil
+		case i18n.T(i18n.DeleteConfigAction):
+			return "delete_config", nil
+		case i18n.T(i18n.ModifyUserAction):
+			return "modify_user", nil
+		case i18n.T(i18n.ModifyPortAction):
+			return "modify_port", nil
+		case i18n.T(i18n.BackAction):
+			return "back", fmt.Errorf("返回主菜单") // TODO: 需要翻译
+		default:
+			return "connect", nil
+		}
 }
 
 // ShowHostDetails 显示主机详细信息
 func ShowHostDetails(host ssh.SSHHost) {
-	fmt.Println("\n=== 主机详细信息 ===")
-	fmt.Printf("主机别名: %s\n", host.Host)
+	fmt.Println("\n" + i18n.T(i18n.HostDetailsTitle))
+	fmt.Printf(i18n.T(i18n.HostAlias) + "\n", host.Host)
 	if host.HostName != "" {
-		fmt.Printf("主机地址: %s\n", host.HostName)
+		fmt.Printf(i18n.T(i18n.HostName) + "\n", host.HostName)
 	}
 	if host.User != "" {
-		fmt.Printf("用户名: %s\n", host.User)
+		fmt.Printf(i18n.T(i18n.UserName) + "\n", host.User)
 	}
 	if host.Port != "22" {
-		fmt.Printf("端口: %s\n", host.Port)
+		fmt.Printf(i18n.T(i18n.Port) + "\n", host.Port)
 	}
 	if host.KeyFile != "" {
-		fmt.Printf("密钥文件: %s\n", host.KeyFile)
+		fmt.Printf(i18n.T(i18n.KeyFile) + "\n", host.KeyFile)
 	}
-	fmt.Print("====================\n\n")
+	fmt.Print("====================\n\n") // TODO: 需要翻译
 }

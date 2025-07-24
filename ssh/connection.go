@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"sshgo/i18n"
 
 	"github.com/manifoldco/promptui"
 )
@@ -14,21 +15,21 @@ func ConnectToHost(host SSHHost) error {
 	user := host.User
 	if user == "" {
 		prompt := promptui.Prompt{
-			Label:   "请输入用户名",
-			Default: "root",
-		}
+					Label:   i18n.T(i18n.EnterNewUsername),
+					Default: "root",
+				}
 		
 		var err error
-		user, err = prompt.Run()
-		if err != nil {
-			return fmt.Errorf("获取用户名失败: %v", err)
-		}
-		
-		// 保存用户名到配置文件
-		err = SaveUserToConfig(host.Host, user)
-		if err != nil {
-			fmt.Printf("警告: 保存用户名到配置文件失败: %v\n", err)
-		}
+				user, err = prompt.Run()
+				if err != nil {
+					return fmt.Errorf("%s", i18n.TWithArgs(i18n.FailedToGetUsername, err))
+				}
+				
+				// 保存用户名到配置文件
+				err = SaveUserToConfig(host.Host, user)
+				if err != nil {
+					fmt.Printf("警告: %v\n", err) // TODO: 需要翻译
+				}
 		
 		// 更新主机信息
 		host.User = user
@@ -62,6 +63,6 @@ func ConnectToHost(host SSHHost) error {
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	
-	fmt.Printf("正在连接到 %s@%s...\n", host.User, host.Host)
+	fmt.Printf("%s", i18n.TWithArgs(i18n.ConnectingTo, host.User, host.Host) + "\n")
 	return cmd.Run()
 }

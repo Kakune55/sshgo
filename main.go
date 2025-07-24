@@ -5,6 +5,7 @@ import (
 	"os"
 	"strings"
 
+	"sshgo/i18n"
 	"sshgo/operations"
 	"sshgo/ssh"
 	"sshgo/ui"
@@ -18,8 +19,8 @@ func main() {
 		host := parseHostArgument(hostArg)
 		err := ssh.ConnectToHost(host)
 		if err != nil {
-			fmt.Printf("连接到主机时出错: %v\n", err)
-		}
+					fmt.Printf("%v\n", err) // TODO: 需要翻译
+				}
 		return
 	}
 	
@@ -29,77 +30,77 @@ func main() {
 	// 解析SSH配置文件
 	hosts, err := ssh.ParseSSHConfig(configPath)
 	if err != nil {
-		fmt.Printf("解析SSH配置文件失败: %v\n", err)
-		return
-	}
-	
-	if len(hosts) == 0 {
-		fmt.Println("未找到SSH主机配置")
-		return
-	}
+			fmt.Printf("%v\n", err) // TODO: 需要翻译
+			return
+		}
+		
+		if len(hosts) == 0 {
+			fmt.Println("未找到SSH主机配置") // TODO: 需要翻译
+			return
+		}
 	
 	for {
 		// 显示交互式菜单
 		selectedHost, action, err := ui.ShowHostSelectionMenu(hosts)
 		if err != nil {
-			if err.Error() == "interrupt" {
-				fmt.Println("\n再见!")
-				return
-			}
-			fmt.Printf("选择主机时出错: %v\n", err)
-			return
-		}
+					if err.Error() == "interrupt" {
+						fmt.Println("\n" + i18n.T(i18n.Goodbye))
+						return
+					}
+					fmt.Printf("%v\n", err) // TODO: 需要翻译
+					return
+				}
 		
 		switch action {
 		case "connect":
 			// 连接到选中的主机
-			err = ssh.ConnectToHost(selectedHost)
-			if err != nil {
-				fmt.Printf("连接到主机时出错: %v\n", err)
-			}
+						err = ssh.ConnectToHost(selectedHost)
+						if err != nil {
+							fmt.Printf("%v\n", err) // TODO: 需要翻译
+						}
 		case "details":
 			// 显示主机详细信息
 			ui.ShowHostDetails(selectedHost)
 		case "delete_key":
 			// 删除密钥文件
-			err = operations.DeleteKeyFile(selectedHost)
-			if err != nil {
-				fmt.Printf("删除密钥文件时出错: %v\n", err)
-			}
+						err = operations.DeleteKeyFile(selectedHost)
+						if err != nil {
+							fmt.Printf("%v\n", err) // TODO: 需要翻译
+						}
 		case "delete_config":
 			// 删除配置
-			err = operations.DeleteHostConfig(selectedHost)
-			if err != nil {
-				fmt.Printf("删除配置时出错: %v\n", err)
-			} else {
-				// 重新加载主机列表
-				fmt.Println("配置已删除，重新加载主机列表...")
-				// 重新解析SSH配置文件
-				hosts, err = ssh.ParseSSHConfig(configPath)
-				if err != nil {
-					fmt.Printf("重新解析SSH配置文件失败: %v\n", err)
-					return
-				}
-				if len(hosts) == 0 {
-					fmt.Println("未找到SSH主机配置")
-					return
-				}
-			}
+						err = operations.DeleteHostConfig(selectedHost)
+						if err != nil {
+							fmt.Printf("%v\n", err) // TODO: 需要翻译
+						} else {
+							// 重新加载主机列表
+							fmt.Println("配置已删除，重新加载主机列表...") // TODO: 需要翻译
+							// 重新解析SSH配置文件
+							hosts, err = ssh.ParseSSHConfig(configPath)
+							if err != nil {
+								fmt.Printf("%v\n", err) // TODO: 需要翻译
+								return
+							}
+							if len(hosts) == 0 {
+								fmt.Println("未找到SSH主机配置") // TODO: 需要翻译
+								return
+							}
+						}
 		case "modify_user":
 			// 修改用户
-			err = operations.ModifyUser(selectedHost)
-			if err != nil {
-				fmt.Printf("修改用户时出错: %v\n", err)
-			}
+						err = operations.ModifyUser(selectedHost)
+						if err != nil {
+							fmt.Printf("%v\n", err) // TODO: 需要翻译
+						}
 		case "modify_port":
 			// 修改端口
-			err = operations.ModifyPort(selectedHost)
-			if err != nil {
-				fmt.Printf("修改端口时出错: %v\n", err)
-			}
+						err = operations.ModifyPort(selectedHost)
+						if err != nil {
+							fmt.Printf("%v\n", err) // TODO: 需要翻译
+						}
 		case "exit":
-			fmt.Println("Bye!")
-			return
+					fmt.Println(i18n.T(i18n.Goodbye))
+					return
 		case "back":
 			// 返回主菜单
 			continue

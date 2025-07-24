@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"sshgo/i18n"
 	"sshgo/ssh"
 
 	"github.com/manifoldco/promptui"
@@ -12,101 +13,110 @@ import (
 // DeleteKeyFile 删除密钥文件
 func DeleteKeyFile(host ssh.SSHHost) error {
 	if host.KeyFile == "" {
-		return fmt.Errorf("该主机没有配置密钥文件")
-	}
+			return fmt.Errorf("%s", i18n.T(i18n.FailedToDeleteKey))
+		}
 	
 	// 确认删除
-	prompt := promptui.Prompt{
-		Label:     fmt.Sprintf("确定要删除密钥文件 '%s' 吗?", host.KeyFile),
-		IsConfirm: true,
-	}
+		prompt := promptui.Prompt{
+			Label:     i18n.TWithArgs(i18n.ConfirmDeleteKey, host.KeyFile),
+			IsConfirm: true,
+		}
 	
 	_, err := prompt.Run()
-	if err != nil {
-		return fmt.Errorf("取消删除操作")
-	}
+			if err != nil {
+				return fmt.Errorf("%s", i18n.T(i18n.CancelOperation))
+			}
 	
 	// 删除文件
-	err = os.Remove(host.KeyFile)
-	if err != nil {
-		return fmt.Errorf("删除密钥文件失败: %v", err)
-	}
-	
-	fmt.Printf("成功删除密钥文件: %s\n", host.KeyFile)
+		err = os.Remove(host.KeyFile)
+		if err != nil {
+					msg := i18n.TWithArgs(i18n.FailedToDeleteKey, err)
+					return fmt.Errorf("%s", msg)
+				}
+				
+				msg := i18n.TWithArgs(i18n.SuccessfullyDeletedKey, host.KeyFile)
+				fmt.Printf("%s\n", msg)
 	return nil
 }
 
 // DeleteHostConfig 删除主机配置
 func DeleteHostConfig(host ssh.SSHHost) error {
 	// 确认删除
-	prompt := promptui.Prompt{
-		Label:     fmt.Sprintf("确定要删除主机 '%s' 的配置吗? 这将从config和known_hosts文件中移除相关记录", host.Host),
-		IsConfirm: true,
-	}
+		prompt := promptui.Prompt{
+			Label:     i18n.TWithArgs(i18n.ConfirmDeleteConfig, host.Host),
+			IsConfirm: true,
+		}
 	
 	_, err := prompt.Run()
-	if err != nil {
-		return fmt.Errorf("取消删除操作")
-	}
-	
-	// 从SSH配置文件中删除主机配置
-	err = ssh.RemoveHostFromConfig(host.Host)
-	if err != nil {
-		fmt.Printf("警告: 从配置文件中删除主机配置时出错: %v\n", err)
-	}
-	
-	// 从known_hosts文件中删除主机记录
-	err = ssh.RemoveHostFromKnownHosts(host.Host)
-	if err != nil {
-		fmt.Printf("警告: 从known_hosts文件中删除主机记录时出错: %v\n", err)
-	}
-	
-	fmt.Printf("成功删除主机 '%s' 的配置\n", host.Host)
+			if err != nil {
+				return fmt.Errorf("%s", i18n.T(i18n.CancelOperation))
+			}
+		
+		// 从SSH配置文件中删除主机配置
+				err = ssh.RemoveHostFromConfig(host.Host)
+				if err != nil {
+					fmt.Printf("警告: 从配置文件中删除主机配置时出错: %v\n", err) // TODO: 需要翻译
+				}
+				
+				// 从known_hosts文件中删除主机记录
+				err = ssh.RemoveHostFromKnownHosts(host.Host)
+				if err != nil {
+					fmt.Printf("警告: 从known_hosts文件中删除主机记录时出错: %v\n", err) // TODO: 需要翻译
+				}
+		
+		msg := i18n.TWithArgs(i18n.SuccessfullyDeletedConfig, host.Host)
+		fmt.Printf("%s\n", msg)
 	return nil
 }
 
 // ModifyUser 修改主机用户
 func ModifyUser(host ssh.SSHHost) error {
 	// 询问新用户名
-	prompt := promptui.Prompt{
-		Label:   "请输入新用户名",
-		Default: host.User,
-	}
+		prompt := promptui.Prompt{
+			Label:   i18n.T(i18n.EnterNewUsername),
+			Default: host.User,
+		}
 	
 	newUser, err := prompt.Run()
-	if err != nil {
-		return fmt.Errorf("获取新用户名失败: %v", err)
-	}
-	
-	// 保存新用户名到配置文件
-	err = ssh.SaveUserToConfig(host.Host, newUser)
-	if err != nil {
-		return fmt.Errorf("保存用户名到配置文件失败: %v", err)
-	}
-	
-	fmt.Printf("成功将主机 '%s' 的用户名修改为 '%s'\n", host.Host, newUser)
+			if err != nil {
+				msg := i18n.TWithArgs(i18n.FailedToGetUsername, err)
+				return fmt.Errorf("%s", msg)
+			}
+		
+		// 保存新用户名到配置文件
+			err = ssh.SaveUserToConfig(host.Host, newUser)
+			if err != nil {
+				msg := i18n.TWithArgs(i18n.FailedToModifyUser, err)
+				return fmt.Errorf("%s", msg)
+			}
+			
+			msg := i18n.TWithArgs(i18n.SuccessfullyModifiedUser, host.Host, newUser)
+			fmt.Printf("%s\n", msg)
 	return nil
 }
 
 // ModifyPort 修改主机端口
 func ModifyPort(host ssh.SSHHost) error {
 	// 询问新端口号
-	prompt := promptui.Prompt{
-		Label:   "请输入新端口号",
-		Default: host.Port,
-	}
+		prompt := promptui.Prompt{
+			Label:   i18n.T(i18n.EnterNewPort),
+			Default: host.Port,
+		}
 	
 	newPort, err := prompt.Run()
-	if err != nil {
-		return fmt.Errorf("获取新端口号失败: %v", err)
-	}
-	
-	// 保存新端口号到配置文件
-	err = ssh.SavePortToConfig(host.Host, newPort)
-	if err != nil {
-		return fmt.Errorf("保存端口号到配置文件失败: %v", err)
-	}
-	
-	fmt.Printf("成功将主机 '%s' 的端口号修改为 '%s'\n", host.Host, newPort)
+			if err != nil {
+				msg := i18n.TWithArgs(i18n.FailedToGetPort, err)
+				return fmt.Errorf("%s", msg)
+			}
+			
+			// 保存新端口号到配置文件
+			err = ssh.SavePortToConfig(host.Host, newPort)
+			if err != nil {
+				msg := i18n.TWithArgs(i18n.FailedToModifyPort, err)
+				return fmt.Errorf("%s", msg)
+			}
+		
+		msg := i18n.TWithArgs(i18n.SuccessfullyModifiedPort, host.Host, newPort)
+		fmt.Printf("%s\n", msg)
 	return nil
 }
