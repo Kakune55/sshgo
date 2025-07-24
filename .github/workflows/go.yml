@@ -3,7 +3,7 @@ name: 发布构建
 on:
   push:
     tags:
-      - 'v*'  # 只有推送标签时触发
+      - 'v*'
 
 jobs:
   release:
@@ -36,7 +36,7 @@ jobs:
         # macOS AMD64
         GOOS=darwin GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="-s -w" -o builds/sshgo-darwin-amd64 .
         
-        # macOS ARM64 (M1/M2芯片)
+        # macOS ARM64
         GOOS=darwin GOARCH=arm64 CGO_ENABLED=0 go build -ldflags="-s -w" -o builds/sshgo-darwin-arm64 .
 
     - name: 生成校验和文件
@@ -59,5 +59,3 @@ jobs:
           ```bash
           sha256sum -c checksums.txt
           ```
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
