@@ -1,0 +1,63 @@
+name: 发布构建
+
+on:
+  push:
+    tags:
+      - 'v*'  # 只有推送标签时触发
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: 设置 Go 环境
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.24'
+
+    - name: 创建构建目录
+      run: mkdir -p builds
+
+    - name: 为不同平台构建二进制文件
+      run: |
+        # Linux AMD64
+        GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="-s -w" -o builds/sshgo-linux-amd64 .
+        
+        # Linux ARM64
+        GOOS=linux GOARCH=arm64 CGO_ENABLED=0 go build -ldflags="-s -w" -o builds/sshgo-linux-arm64 .
+        
+        # Windows AMD64
+        GOOS=windows GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="-s -w" -o builds/sshgo-windows-amd64.exe .
+        
+        # Windows ARM64
+        GOOS=windows GOARCH=arm64 CGO_ENABLED=0 go build -ldflags="-s -w" -o builds/sshgo-windows-arm64.exe .
+        
+        # macOS AMD64
+        GOOS=darwin GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="-s -w" -o builds/sshgo-darwin-amd64 .
+        
+        # macOS ARM64 (M1/M2芯片)
+        GOOS=darwin GOARCH=arm64 CGO_ENABLED=0 go build -ldflags="-s -w" -o builds/sshgo-darwin-arm64 .
+
+    - name: 生成校验和文件
+      run: |
+        cd builds
+        sha256sum * > checksums.txt
+        cd ..
+
+    - name: 创建 Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          builds/*
+        body: |
+          ## 发布说明
+          
+          自动构建的多平台二进制文件
+          
+          ## 文件校验
+          ```bash
+          sha256sum -c checksums.txt
+          ```
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
