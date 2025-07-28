@@ -25,6 +25,7 @@ var zhStrings = map[StringKey]string{
 	// 输入提示相关
 	EnterNewUsername: "请输入新用户名",
 	EnterNewPort:     "请输入新端口号",
+	DefaultUsername:  "root",
 
 	// 取消操作相关
 	CancelOperation: "取消删除操作",
@@ -47,6 +48,7 @@ var zhStrings = map[StringKey]string{
 	FailedToDeleteKey:    "删除密钥文件失败: %v",
 	FailedToDeleteConfig: "删除配置时出错: %v",
 	FailedToModifyUser:   "修改用户时出错: %v",
+	InvalidSSHCommand:    "无效的SSH命令: %v",
 	FailedToModifyPort:   "修改端口时出错: %v",
 
 	// 成功消息相关

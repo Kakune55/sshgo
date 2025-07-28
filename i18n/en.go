@@ -25,6 +25,7 @@ var enStrings = map[StringKey]string{
 	// 输入提示相关
 	EnterNewUsername: "Please enter a new username",
 	EnterNewPort:     "Please enter a new port number",
+	DefaultUsername:  "root",
 
 	// 取消操作相关
 	CancelOperation: "Cancel operation",
@@ -47,6 +48,7 @@ var enStrings = map[StringKey]string{
 	FailedToDeleteKey:    "Failed to delete key file: %v",
 	FailedToDeleteConfig: "Failed to delete configuration: %v",
 	FailedToModifyUser:   "Failed to modify user: %v",
+	InvalidSSHCommand:    "Invalid SSH command: %v",
 	FailedToModifyPort:   "Failed to modify port: %v",
 
 	// 成功消息相关

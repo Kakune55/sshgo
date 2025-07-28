@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"os"
-	"strings"
 
 	"sshgo/i18n"
 	"sshgo/operations"
@@ -16,7 +15,7 @@ func main() {
 	if len(os.Args) > 1 {
 		// 如果提供了参数，直接连接到指定主机
 		hostArg := os.Args[1]
-		host := parseHostArgument(hostArg)
+		host := ssh.ParseHostArgument(hostArg)
 		err := ssh.ConnectToHost(host)
 		if err != nil {
 			fmt.Printf("%v\n", err)
@@ -106,34 +105,4 @@ func main() {
 			continue
 		}
 	}
-}
-
-// parseHostArgument 解析命令行参数中的主机信息
-func parseHostArgument(hostArg string) ssh.SSHHost {
-	host := ssh.SSHHost{
-		Port: "22", // 默认端口
-	}
-
-	// 检查是否包含用户信息 (user@host)
-	if strings.Contains(hostArg, "@") {
-		parts := strings.Split(hostArg, "@")
-		host.User = parts[0]
-		hostArg = parts[1]
-	}
-
-	// 检查是否包含端口信息 (host:port)
-	if strings.Contains(hostArg, ":") {
-		parts := strings.Split(hostArg, ":")
-		host.HostName = parts[0]
-		host.Port = parts[1]
-	} else {
-		host.HostName = hostArg
-	}
-
-	// 设置Host字段为HostName或原始参数
-	if host.Host == "" {
-		host.Host = host.HostName
-	}
-
-	return host
 }

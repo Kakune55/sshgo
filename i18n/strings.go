@@ -6,6 +6,7 @@ type StringKey string
 // 定义所有字符串资源的键
 const (
 	// 主菜单相关
+	InvalidSSHCommand StringKey = "invalid_ssh_command"
 	SelectHostLabel  StringKey = "select_host_label"
 	SearchHostOption StringKey = "search_host_option"
 	ExitOption       StringKey = "exit_option"
@@ -28,6 +29,7 @@ const (
 	// 输入提示相关
 	EnterNewUsername StringKey = "enter_new_username"
 	EnterNewPort     StringKey = "enter_new_port"
+	DefaultUsername  StringKey = "default_username"
 
 	// 取消操作相关
 	CancelOperation StringKey = "cancel_operation"
