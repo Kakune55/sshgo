@@ -212,6 +212,7 @@ func ShowActionMenu() (string, error) {
 		i18n.T(i18n.DeleteConfigAction),
 		i18n.T(i18n.ModifyUserAction),
 		i18n.T(i18n.ModifyPortAction),
+		i18n.T(i18n.NetworkDiagnosticsAction), // 新增网络诊断选项
 		i18n.T(i18n.BackAction),
 	}
 
@@ -242,6 +243,8 @@ func ShowActionMenu() (string, error) {
 		return "modify_user", nil
 	case i18n.T(i18n.ModifyPortAction):
 		return "modify_port", nil
+	case i18n.T(i18n.NetworkDiagnosticsAction): // 处理网络诊断动作
+		return "network_diagnostics", nil
 	case i18n.T(i18n.BackAction):
 		return "back", fmt.Errorf("返回主菜单")
 	default:

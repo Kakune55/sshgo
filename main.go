@@ -97,6 +97,12 @@ func main() {
 			if err != nil {
 				fmt.Printf("%v\n", err)
 			}
+		case "network_diagnostics":
+			// 显示网络诊断菜单
+			err = ui.ShowNetworkDiagnostics(selectedHost)
+			if err != nil {
+				fmt.Printf("%v\n", err)
+			}
 		case "exit":
 			fmt.Println(i18n.T(i18n.Goodbye))
 			return

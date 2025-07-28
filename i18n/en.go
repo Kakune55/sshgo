@@ -19,8 +19,9 @@ var enStrings = map[StringKey]string{
 	DeleteKeyAction:    "Delete Key File",
 	DeleteConfigAction: "Delete Configuration",
 	ModifyUserAction:   "Modify User",
-	ModifyPortAction:   "Modify Port",
-	BackAction:         "Back",
+	ModifyPortAction:       "Modify Port",
+	NetworkDiagnosticsAction: "Network Diagnostics", // 新增网络诊断动作
+	BackAction:             "Back",
 
 	// 输入提示相关
 	EnterNewUsername: "Please enter a new username",

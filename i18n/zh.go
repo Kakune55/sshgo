@@ -19,8 +19,9 @@ var zhStrings = map[StringKey]string{
 	DeleteKeyAction:    "删除密钥文件",
 	DeleteConfigAction: "删除配置",
 	ModifyUserAction:   "修改用户",
-	ModifyPortAction:   "修改端口",
-	BackAction:         "返回",
+	ModifyPortAction:       "修改端口",
+	NetworkDiagnosticsAction: "网络诊断", // 新增网络诊断动作
+	BackAction:             "返回",
 
 	// 输入提示相关
 	EnterNewUsername: "请输入新用户名",

@@ -23,8 +23,9 @@ const (
 	DeleteKeyAction    StringKey = "delete_key_action"
 	DeleteConfigAction StringKey = "delete_config_action"
 	ModifyUserAction   StringKey = "modify_user_action"
-	ModifyPortAction   StringKey = "modify_port_action"
-	BackAction         StringKey = "back_action"
+	ModifyPortAction       StringKey = "modify_port_action"
+	NetworkDiagnosticsAction StringKey = "network_diagnostics_action" // 新增网络诊断动作
+	BackAction             StringKey = "back_action"
 
 	// 输入提示相关
 	EnterNewUsername StringKey = "enter_new_username"
