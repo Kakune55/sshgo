@@ -20,8 +20,20 @@ var enStrings = map[StringKey]string{
 	DeleteConfigAction: "Delete Configuration",
 	ModifyUserAction:   "Modify User",
 	ModifyPortAction:       "Modify Port",
-	NetworkDiagnosticsAction: "Network Diagnostics", // 新增网络诊断动作
+	NetworkDiagnosticsAction: "Network Diagnostics",
 	BackAction:             "Back",
+
+	// 网络诊断相关
+	NetworkDiagnosticsTitle: "Network Diagnostics - %s",
+	MeasureLatencyAction:    "Measure Latency",
+	RouteTraceAction:        "Route Trace",
+	ReturnToMainMenu:        "Return to Main Menu",
+	TestingLatency:          "Testing latency to %s...",
+	LatencyResult:           "Latency: %v",
+	TracingRoute:            "Tracing route to %s...",
+	RouteTraceResults:       "Route trace results:",
+	RouteHopInfo:            "Hop %d: %s (RTT: %v)",
+	RouteHopTimeout:         "Hop %d: * (RTT: %v)",
 
 	// 输入提示相关
 	EnterNewUsername: "Please enter a new username",

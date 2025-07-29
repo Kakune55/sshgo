@@ -79,9 +79,11 @@ func NewRouteTracer() *RouteTracer {
 	}
 }
 
+// RouteTraceCallback 定义路由追踪的回调函数类型
+type RouteTraceCallback func(hop RouteHop, isTimeout bool)
 
-// 追踪路由
-func (rt *RouteTracer) TraceRoute(host string) ([]RouteHop, error) {
+// 追踪路由，支持实时回调
+func (rt *RouteTracer) TraceRouteWithCallback(host string, callback RouteTraceCallback) ([]RouteHop, error) {
 	// 解析目标地址
 	destAddr, err := net.ResolveIPAddr("ip4", host)
 	if err != nil {
@@ -133,8 +135,11 @@ func (rt *RouteTracer) TraceRoute(host string) ([]RouteHop, error) {
 		n, peer, err := c.ReadFrom(rb) // peer is net.Addr
 		if err != nil {
 			if netErr, ok := err.(net.Error); ok && netErr.Timeout() {
-				fmt.Printf("跳点 %d: * (RTT: %v)\n", ttl, time.Since(start))
-				hops = append(hops, RouteHop{Index: ttl})
+				hop := RouteHop{Index: ttl}
+				if callback != nil {
+					callback(hop, true)
+				}
+				hops = append(hops, hop)
 				continue
 			}
 			return nil, err
@@ -155,9 +160,12 @@ func (rt *RouteTracer) TraceRoute(host string) ([]RouteHop, error) {
 			ip = net.ParseIP(peer.String())
 		}
 
-		// 实时打印跳点信息
-		fmt.Printf("跳点 %d: %s (RTT: %v)\n", ttl, ip, rtt)
-		hops = append(hops, RouteHop{Index: ttl, IP: ip, RTT: rtt})
+		// 创建跳点信息
+		hop := RouteHop{Index: ttl, IP: ip, RTT: rtt}
+		if callback != nil {
+			callback(hop, false)
+		}
+		hops = append(hops, hop)
 
 		// 如果到达目的地，则停止
 		if rm.Type == ipv4.ICMPTypeEchoReply {
@@ -166,4 +174,9 @@ func (rt *RouteTracer) TraceRoute(host string) ([]RouteHop, error) {
 	}
 
 	return hops, nil
+}
+
+// 追踪路由（兼容旧接口）
+func (rt *RouteTracer) TraceRoute(host string) ([]RouteHop, error) {
+	return rt.TraceRouteWithCallback(host, nil)
 }

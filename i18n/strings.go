@@ -24,8 +24,20 @@ const (
 	DeleteConfigAction StringKey = "delete_config_action"
 	ModifyUserAction   StringKey = "modify_user_action"
 	ModifyPortAction       StringKey = "modify_port_action"
-	NetworkDiagnosticsAction StringKey = "network_diagnostics_action" // 新增网络诊断动作
+	NetworkDiagnosticsAction StringKey = "network_diagnostics_action"
 	BackAction             StringKey = "back_action"
+
+	// 网络诊断相关
+	NetworkDiagnosticsTitle StringKey = "network_diagnostics_title"
+	MeasureLatencyAction    StringKey = "measure_latency_action"
+	RouteTraceAction        StringKey = "route_trace_action"
+	ReturnToMainMenu        StringKey = "return_to_main_menu"
+	TestingLatency          StringKey = "testing_latency"
+	LatencyResult           StringKey = "latency_result"
+	TracingRoute            StringKey = "tracing_route"
+	RouteTraceResults       StringKey = "route_trace_results"
+	RouteHopInfo            StringKey = "route_hop_info"
+	RouteHopTimeout         StringKey = "route_hop_timeout"
 
 	// 输入提示相关
 	EnterNewUsername StringKey = "enter_new_username"

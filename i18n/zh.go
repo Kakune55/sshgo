@@ -20,8 +20,20 @@ var zhStrings = map[StringKey]string{
 	DeleteConfigAction: "删除配置",
 	ModifyUserAction:   "修改用户",
 	ModifyPortAction:       "修改端口",
-	NetworkDiagnosticsAction: "网络诊断", // 新增网络诊断动作
+	NetworkDiagnosticsAction: "网络诊断",
 	BackAction:             "返回",
+
+	// 网络诊断相关
+	NetworkDiagnosticsTitle: "网络诊断 - %s",
+	MeasureLatencyAction:    "测量延迟",
+	RouteTraceAction:        "路由追踪",
+	ReturnToMainMenu:        "返回主菜单",
+	TestingLatency:          "正在测试到 %s 的延迟...",
+	LatencyResult:           "延迟: %v",
+	TracingRoute:            "正在追踪到 %s 的路由...",
+	RouteTraceResults:       "路由追踪结果:",
+	RouteHopInfo:            "跳点 %d: %s (RTT: %v)",
+	RouteHopTimeout:         "跳点 %d: * (RTT: %v)",
 
 	// 输入提示相关
 	EnterNewUsername: "请输入新用户名",
