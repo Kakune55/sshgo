@@ -418,58 +418,38 @@ func RemoveHostFromConfig(hostName string) error {
 	// 读取现有配置文件内容
 	content, err := os.ReadFile(configPath)
 	if err != nil {
-		// 如果文件不存在，直接返回
 		if os.IsNotExist(err) {
-			return nil
+			return nil // 文件不存在，无需操作
 		}
 		return fmt.Errorf("读取配置文件失败: %v", err)
 	}
 
-	// 将内容转换为字符串并按行分割
 	lines := strings.Split(string(content), "\n")
-
-	// 查找并删除主机配置段落
 	newLines := []string{}
-	inHostSection := false
-	skipSection := false
+	inSectionToDelete := false
 
 	for _, line := range lines {
 		trimmedLine := strings.TrimSpace(line)
+		isHostLine := strings.HasPrefix(trimmedLine, "Host ")
 
-		// 检查是否是Host行
-		if strings.HasPrefix(trimmedLine, "Host ") {
-			// 检查是否是我们要删除的主机
-			hostNames := strings.Fields(trimmedLine[5:]) // 去掉"Host "前缀
-			skipSection = false
-			for _, name := range hostNames {
-				if name == hostName {
-					skipSection = true
-					break
-				}
+		if isHostLine {
+			// 检查此Host行是否是我们想删除的目标
+			fields := strings.Fields(trimmedLine)
+			if len(fields) > 1 && fields[1] == hostName {
+				inSectionToDelete = true // 进入了待删除的配置区块
+			} else {
+				inSectionToDelete = false // 遇到了另一个Host，退出删除模式
 			}
-			inHostSection = true
 		}
 
-		// 如果不在要删除的主机段落中，则保留该行
-		if !skipSection {
+		if !inSectionToDelete {
 			newLines = append(newLines, line)
-		}
-
-		// 检查段落是否结束（遇到空行或其他Host行）
-		if inHostSection && (trimmedLine == "" || (strings.HasPrefix(trimmedLine, "Host ") && skipSection)) {
-			if skipSection {
-				// 如果是结束的Host行，需要保留
-				if strings.HasPrefix(trimmedLine, "Host ") && !strings.Contains(trimmedLine, hostName) {
-					newLines = append(newLines, line)
-				}
-				skipSection = false
-			}
-			inHostSection = strings.HasPrefix(trimmedLine, "Host ")
 		}
 	}
 
-	// 写入更新后的内容到配置文件
-	err = os.WriteFile(configPath, []byte(strings.Join(newLines, "\n")), 0600)
+	// 将修改后的内容写回文件
+	output := strings.Join(newLines, "\n")
+	err = os.WriteFile(configPath, []byte(output), 0600)
 	if err != nil {
 		return fmt.Errorf("写入配置文件失败: %v", err)
 	}
