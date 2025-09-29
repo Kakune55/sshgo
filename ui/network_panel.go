@@ -2,10 +2,11 @@ package ui
 
 import (
 	"fmt"
-	"time"
 	"sshgo/i18n"
 	"sshgo/network"
 	"sshgo/ssh"
+	"time"
+
 	"github.com/manifoldco/promptui"
 )
 
