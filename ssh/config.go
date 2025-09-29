@@ -253,161 +253,136 @@ func parseKnownHosts() ([]SSHHost, error) {
 
 // SaveUserToConfig 保存用户名到SSH配置文件
 func SaveUserToConfig(host, user string) error {
-	configPath := GetSSHConfigPath()
-
-	// 读取现有配置文件内容
-	content, err := os.ReadFile(configPath)
-	if err != nil {
-		// 如果文件不存在，创建新文件
-		if os.IsNotExist(err) {
-			content = []byte{}
-		} else {
-			return fmt.Errorf("读取配置文件失败: %v", err)
-		}
-	}
-
-	// 将内容转换为字符串
-	configStr := string(content)
-
-	// 检查是否已存在该主机的配置
-	hostSection := fmt.Sprintf("Host %s", host)
-	if strings.Contains(configStr, hostSection) {
-		// 如果已存在该主机配置，添加User行（如果还没有的话）
-		lines := strings.Split(configStr, "\n")
-		newLines := []string{}
-		inHostSection := false
-		userAdded := false
-
-		for _, line := range lines {
-			trimmedLine := strings.TrimSpace(line)
-
-			if strings.HasPrefix(trimmedLine, "Host ") {
-				inHostSection = (trimmedLine == hostSection)
-			}
-
-			if inHostSection && strings.HasPrefix(trimmedLine, "User ") {
-				// 如果已存在User行，更新用户名
-				line = fmt.Sprintf("    User %s", user)
-				userAdded = true
-			}
-
-			newLines = append(newLines, line)
-
-			// 如果在主机配置段落中且遇到空行或下一个Host行，添加User行
-			if inHostSection && !userAdded && (trimmedLine == "" || strings.HasPrefix(trimmedLine, "Host ")) {
-				if trimmedLine != "" {
-					// 如果是下一个Host行，先添加User行
-					newLines = append(newLines[:len(newLines)-1], fmt.Sprintf("    User %s", user), line)
-				} else {
-					// 如果是空行，添加User行
-					newLines[len(newLines)-1] = fmt.Sprintf("    User %s", user)
-					newLines = append(newLines, "")
-				}
-				userAdded = true
-				inHostSection = false
-			}
-		}
-
-		// 如果遍历完所有行仍未添加User行，说明Host段落没有结束，在末尾添加
-		if inHostSection && !userAdded {
-			newLines = append(newLines, fmt.Sprintf("    User %s", user))
-		}
-
-		configStr = strings.Join(newLines, "\n")
-	} else {
-		// 如果不存在该主机配置，添加新的主机配置段落
-		if len(configStr) > 0 && !strings.HasSuffix(configStr, "\n") {
-			configStr += "\n"
-		}
-		configStr += fmt.Sprintf("Host %s\n    User %s\n\n", host, user)
-	}
-
-	// 写入更新后的内容到配置文件
-	err = os.WriteFile(configPath, []byte(configStr), 0600)
-	if err != nil {
-		return fmt.Errorf("写入配置文件失败: %v", err)
-	}
-
-	return nil
+	return UpdateHostDirective(host, "User", user)
 }
 
 // SavePortToConfig 保存端口号到SSH配置文件
 func SavePortToConfig(host, port string) error {
+	return UpdateHostDirective(host, "Port", port)
+}
+
+// UpdateHostDirective 通用更新/新增某个 Host 下的指令 (如 User / Port)
+// 逻辑：
+// 1. 读取配置 -> 切分为多个块（由 Host 行开始）
+// 2. 寻找包含目标 host 的 Host 行（Host 行可能包含多个模式，这里按精确匹配其中一个）
+// 3. 在该块内部：若存在同名指令，覆盖；否则在块末尾追加（保持缩进 4 空格）
+// 4. 若不存在该 host 块，则在文件末尾新建一个块
+func UpdateHostDirective(host, directive, value string) error {
 	configPath := GetSSHConfigPath()
 
-	// 读取现有配置文件内容
-	content, err := os.ReadFile(configPath)
+	data, err := os.ReadFile(configPath)
 	if err != nil {
-		// 如果文件不存在，创建新文件
 		if os.IsNotExist(err) {
-			content = []byte{}
+			data = []byte("")
 		} else {
 			return fmt.Errorf("读取配置文件失败: %v", err)
 		}
 	}
 
-	// 将内容转换为字符串
-	configStr := string(content)
+	lines := strings.Split(string(data), "\n")
 
-	// 检查是否已存在该主机的配置
-	hostSection := fmt.Sprintf("Host %s", host)
-	if strings.Contains(configStr, hostSection) {
-		// 如果已存在该主机配置，添加Port行（如果还没有的话）
-		lines := strings.Split(configStr, "\n")
-		newLines := []string{}
-		inHostSection := false
-		portAdded := false
-
-		for _, line := range lines {
-			trimmedLine := strings.TrimSpace(line)
-
-			if strings.HasPrefix(trimmedLine, "Host ") {
-				inHostSection = (trimmedLine == hostSection)
-			}
-
-			if inHostSection && strings.HasPrefix(trimmedLine, "Port ") {
-				// 如果已存在Port行，更新端口号
-				line = fmt.Sprintf("    Port %s", port)
-				portAdded = true
-			}
-
-			newLines = append(newLines, line)
-
-			// 如果在主机配置段落中且遇到空行或下一个Host行，添加Port行
-			if inHostSection && !portAdded && (trimmedLine == "" || strings.HasPrefix(trimmedLine, "Host ")) {
-				if trimmedLine != "" {
-					// 如果是下一个Host行，先添加Port行
-					newLines = append(newLines[:len(newLines)-1], fmt.Sprintf("    Port %s", port), line)
-				} else {
-					// 如果是空行，添加Port行
-					newLines[len(newLines)-1] = fmt.Sprintf("    Port %s", port)
-					newLines = append(newLines, "")
-				}
-				portAdded = true
-				inHostSection = false
-			}
-		}
-
-		// 如果遍历完所有行仍未添加Port行，说明Host段落没有结束，在末尾添加
-		if inHostSection && !portAdded {
-			newLines = append(newLines, fmt.Sprintf("    Port %s", port))
-		}
-
-		configStr = strings.Join(newLines, "\n")
-	} else {
-		// 如果不存在该主机配置，添加新的主机配置段落
-		if len(configStr) > 0 && !strings.HasSuffix(configStr, "\n") {
-			configStr += "\n"
-		}
-		configStr += fmt.Sprintf("Host %s\n    Port %s\n\n", host, port)
+	// 解析为 blocks
+	type block struct {
+		header string   // 原始 Host 行
+		hosts  []string // Host 行里的所有主机模式
+		body   []string // 不包含 header 的后续行（直到下一个 Host 行 / 文件结束）
 	}
 
-	// 写入更新后的内容到配置文件
-	err = os.WriteFile(configPath, []byte(configStr), 0600)
-	if err != nil {
+	var blocks []block
+	var current *block
+
+	flush := func() {
+		if current != nil {
+			blocks = append(blocks, *current)
+			current = nil
+		}
+	}
+
+	for _, raw := range lines {
+		trim := strings.TrimSpace(raw)
+		if strings.HasPrefix(strings.ToLower(trim), "host ") {
+			// 新的 block
+			flush()
+			fields := strings.Fields(trim)
+			var hostSpecs []string
+			if len(fields) > 1 {
+				hostSpecs = fields[1:]
+			}
+			current = &block{header: raw, hosts: hostSpecs}
+			continue
+		}
+		if current == nil {
+			// 文件可能前面有非 Host 行（不标准），我们直接跳过或放入匿名 block
+			if raw == "" && len(blocks) == 0 {
+				// 顶部空行忽略
+				continue
+			}
+			// 放入一个无 header 的 block（用于保留可能的注释）
+			current = &block{header: "", hosts: nil}
+		}
+		current.body = append(current.body, raw)
+	}
+	flush()
+
+	// 查找目标 host block
+	targetIndex := -1
+	for i, b := range blocks {
+		for _, h := range b.hosts {
+			if h == host { // 精确匹配
+				targetIndex = i
+				break
+			}
+		}
+		if targetIndex >= 0 { break }
+	}
+
+	directiveLower := strings.ToLower(directive)
+	updated := false
+
+	if targetIndex >= 0 {
+		b := blocks[targetIndex]
+		for i, bodyLine := range b.body {
+			trim := strings.TrimSpace(bodyLine)
+			if strings.HasPrefix(strings.ToLower(trim), strings.ToLower(directive)+" ") {
+				b.body[i] = fmt.Sprintf("    %s %s", directive, value)
+				updated = true
+				break
+			}
+		}
+		if !updated { // append at end (ensure no duplicate trailing blank lines)
+			b.body = append(b.body, fmt.Sprintf("    %s %s", directive, value))
+		}
+		blocks[targetIndex] = b
+	} else {
+		// 创建新 block
+		newBlock := block{
+			header: fmt.Sprintf("Host %s", host),
+			hosts:  []string{host},
+			body:   []string{fmt.Sprintf("    %s %s", directive, value), ""}, // 结尾空行
+		}
+		blocks = append(blocks, newBlock)
+	}
+
+	// 重新拼接
+	var out []string
+	for _, b := range blocks {
+		if b.header != "" {
+			out = append(out, b.header)
+		}
+		out = append(out, b.body...)
+	}
+
+	// 清理多余末尾空行
+	for len(out) > 0 && strings.TrimSpace(out[len(out)-1]) == "" {
+		out = out[:len(out)-1]
+	}
+	output := strings.Join(out, "\n") + "\n"
+
+	if err := os.WriteFile(configPath, []byte(output), 0600); err != nil {
 		return fmt.Errorf("写入配置文件失败: %v", err)
 	}
 
+	_ = directiveLower // 预留后续需要大小写归一化的扩展
 	return nil
 }
 

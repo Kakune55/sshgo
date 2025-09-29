@@ -34,6 +34,7 @@ const (
 	ReturnToMainMenu        StringKey = "return_to_main_menu"
 	TestingLatency          StringKey = "testing_latency"
 	LatencyResult           StringKey = "latency_result"
+	LatencySummary          StringKey = "latency_summary"
 	TracingRoute            StringKey = "tracing_route"
 	RouteTraceResults       StringKey = "route_trace_results"
 	RouteHopInfo            StringKey = "route_hop_info"

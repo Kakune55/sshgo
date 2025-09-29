@@ -24,30 +24,40 @@ func init() {
 
 // detectLanguage 检测系统语言
 func detectLanguage() Language {
-	// 首先检查环境变量
+	// 优先使用显式环境变量覆盖（更可控）
+	if explicit := os.Getenv("SSHGO_LANG"); explicit != "" {
+		switch strings.ToLower(explicit) {
+		case "zh", "zh_cn", "zh-cn", "cn", "chinese":
+			return Chinese
+		case "en", "en_us", "en-us", "english":
+			return English
+		}
+	}
+
+	// 其次检查系统常见语言环境变量
 	lang := os.Getenv("LANG")
 	if lang == "" {
 		lang = os.Getenv("LC_ALL")
 	}
-
-	// 如果环境变量包含中文相关设置，则使用中文
-	if lang != "" && (strings.Contains(lang, "zh") || strings.Contains(lang, "ZH")) {
+	l := strings.ToLower(lang)
+	if l != "" && strings.Contains(l, "zh") {
 		return Chinese
 	}
 
-	// 检查系统区域设置
-	// 在Windows系统中检查系统区域
+	// Windows 上语言环境变量不统一，保留一个简单的猜测（可后续扩展）
 	if os.Getenv("OS") == "Windows_NT" {
-		// 简单检查，如果是在中文Windows系统上，默认使用中文
-		// 更复杂的检测可以通过检查系统区域设置实现
-		if strings.Contains(os.Getenv("NUMBER_OF_PROCESSORS"), "Chinese") ||
-			strings.Contains(os.Getenv("PROCESSOR_IDENTIFIER"), "Chinese") {
-			return Chinese
-		}
+		// 如果用户区域未显式提供，可再看下 chcp / UI 但这里保持轻量，直接返回之前判断结果
 	}
 
-	// 默认使用英文
 	return English
+}
+
+// SetLanguage 允许在运行时显式切换语言（如后续想做命令行参数 --lang=en）
+func SetLanguage(lang Language) {
+	switch lang {
+	case Chinese, English:
+		currentLanguage = lang
+	}
 }
 
 // T 获取指定键的翻译字符串

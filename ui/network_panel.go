@@ -2,11 +2,10 @@ package ui
 
 import (
 	"fmt"
-
+	"time"
 	"sshgo/i18n"
 	"sshgo/network"
 	"sshgo/ssh"
-
 	"github.com/manifoldco/promptui"
 )
 
@@ -48,12 +47,31 @@ func ShowNetworkDiagnostics(host ssh.SSHHost) error {
 func performLatencyTest(host ssh.SSHHost) error {
 	fmt.Printf(i18n.T(i18n.TestingLatency)+"\n", host.Host)
 	measurer := network.NewLatencyMeasurer()
-	for range 5 {
+	const samples = 5
+	var sum time.Duration
+	var min time.Duration
+	var max time.Duration
+	var count int
+	for i := 0; i < samples; i++ {
 		result, err := measurer.MeasureLatency(host.Host, "tcp")
 		if err != nil {
 			return err
 		}
-		fmt.Printf(i18n.T(i18n.LatencyResult)+"\n", result.Duration)
+		if result.Error != nil {
+			fmt.Printf(i18n.T(i18n.LatencyResult)+"\n", result.Error)
+			continue
+		}
+		d := result.Duration
+		if count == 0 || d < min { min = d }
+		if count == 0 || d > max { max = d }
+		sum += d
+		count++
+		fmt.Printf(i18n.T(i18n.LatencyResult)+"\n", d)
+		time.Sleep(200 * time.Millisecond)
+	}
+	if count > 0 {
+		avg := sum / time.Duration(count)
+		fmt.Printf(i18n.T(i18n.LatencySummary)+"\n", count, min, max, avg)
 	}
 	return nil
 }
@@ -72,22 +90,12 @@ func performRouteTrace(host ssh.SSHHost) error {
 		}
 	}
 	
-	hops, err := tracer.TraceRouteWithCallback(host.Host, callback)
+	_, err := tracer.TraceRouteWithCallback(host.Host, callback)
 	if err != nil {
 		return err
 	}
 	
-	// 如果回调函数为空，则批量显示结果
-	if len(hops) > 0 && callback == nil {
-		fmt.Println(i18n.T(i18n.RouteTraceResults))
-		for _, hop := range hops {
-			if hop.IP == nil {
-				fmt.Printf(i18n.T(i18n.RouteHopTimeout)+"\n", hop.Index, hop.RTT)
-			} else {
-				fmt.Printf(i18n.T(i18n.RouteHopInfo)+"\n", hop.Index, hop.IP, hop.RTT)
-			}
-		}
-	}
+	// 当前使用实时回调显示；如果未来支持无回调模式，可在此补充批量输出
 	
 	return nil
 }

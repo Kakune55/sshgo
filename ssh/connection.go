@@ -5,7 +5,7 @@ import (
 	"os"
 	"os/exec"
 	"sshgo/i18n"
-
+	"strconv"
 	"github.com/manifoldco/promptui"
 )
 
@@ -34,9 +34,11 @@ func validateSSHCommand(args []string) error {
 	for i, arg := range args {
 		if arg == "-p" && i+1 < len(args) {
 			port := args[i+1]
-			// 简单验证端口号是否为数字
 			if port == "" {
 				return fmt.Errorf("port number is required when -p flag is used")
+			}
+			if p, err := strconv.Atoi(port); err != nil || p < 1 || p > 65535 {
+				return fmt.Errorf("invalid port number: %s", port)
 			}
 		}
 	}

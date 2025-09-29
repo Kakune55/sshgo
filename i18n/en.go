@@ -30,6 +30,7 @@ var enStrings = map[StringKey]string{
 	ReturnToMainMenu:        "Return to Main Menu",
 	TestingLatency:          "Testing latency to %s...",
 	LatencyResult:           "Latency: %v",
+	LatencySummary:          "Samples: %d | Min: %v Max: %v Avg: %v",
 	TracingRoute:            "Tracing route to %s...",
 	RouteTraceResults:       "Route trace results:",
 	RouteHopInfo:            "Hop %d: %s (RTT: %v)",

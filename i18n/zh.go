@@ -30,6 +30,7 @@ var zhStrings = map[StringKey]string{
 	ReturnToMainMenu:        "返回主菜单",
 	TestingLatency:          "正在测试到 %s 的延迟...",
 	LatencyResult:           "延迟: %v",
+	LatencySummary:          "样本 %d 个 | 最小: %v 最大: %v 平均: %v",
 	TracingRoute:            "正在追踪到 %s 的路由...",
 	RouteTraceResults:       "路由追踪结果:",
 	RouteHopInfo:            "跳点 %d: %s (RTT: %v)",
