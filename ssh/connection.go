@@ -6,8 +6,6 @@ import (
 	"os/exec"
 	"sshgo/i18n"
 	"strconv"
-
-	"github.com/manifoldco/promptui"
 )
 
 // validateSSHCommand 验证SSH命令和参数的有效性
@@ -57,36 +55,20 @@ func validateSSHCommand(args []string) error {
 			}
 		}
 	}
-	
+
 	return nil
 }
 
-
+// NeedsUsername 检查是否需要用户名
+func NeedsUsername(host SSHHost) bool {
+	return host.User == ""
+}
 
 // ConnectToHost 连接到指定主机
 func ConnectToHost(host SSHHost) error {
-	// 如果没有用户名，询问用户
-	user := host.User
-	if user == "" {
-		prompt := promptui.Prompt{
-			Label:   i18n.T(i18n.EnterNewUsername),
-			Default: i18n.T(i18n.DefaultUsername),
-		}
-
-		var err error
-		user, err = prompt.Run()
-		if err != nil {
-			return fmt.Errorf("%s", i18n.TWithArgs(i18n.FailedToGetUsername, err))
-		}
-
-		// 保存用户名到配置文件
-		err = SaveUserToConfig(host.Host, user)
-		if err != nil {
-			fmt.Printf("警告: %v\n", err)
-		}
-
-		// 更新主机信息
-		host.User = user
+	// 如果没有用户名，返回错误（用户名应由 UI 层获取）
+	if host.User == "" {
+		return fmt.Errorf("用户名未设置")
 	}
 
 	// 构建SSH命令
@@ -96,7 +78,7 @@ func ConnectToHost(host SSHHost) error {
 		args = append(args, "-l", host.User)
 	}
 
-	if host.Port != "22" {
+	if host.Port != "22" && host.Port != "" {
 		args = append(args, "-p", host.Port)
 	}
 
@@ -124,4 +106,17 @@ func ConnectToHost(host SSHHost) error {
 
 	fmt.Printf("%s", i18n.TWithArgs(i18n.ConnectingTo, host.User, host.Host)+"\n")
 	return cmd.Run()
+}
+
+// ConnectToHostWithUser 使用指定用户名连接到主机
+func ConnectToHostWithUser(host SSHHost, username string) error {
+	host.User = username
+	
+	// 保存用户名到配置文件
+	err := SaveUserToConfig(host.Host, username)
+	if err != nil {
+		fmt.Printf("警告: %v\n", err)
+	}
+
+	return ConnectToHost(host)
 }

@@ -29,12 +29,16 @@ var enStrings = map[StringKey]string{
 	RouteTraceAction:        "Route Trace",
 	ReturnToMainMenu:        "Return to Main Menu",
 	TestingLatency:          "Testing latency to %s...",
+	TestingLatencyShort:     "Testing...",
 	LatencyResult:           "Latency: %v",
 	LatencySummary:          "Samples: %d | Min: %v Max: %v Avg: %v",
 	TracingRoute:            "Tracing route to %s...",
+	TracingRouteShort:       "Tracing route...",
 	RouteTraceResults:       "Route trace results:",
 	RouteHopInfo:            "Hop %d: %s (RTT: %v)",
 	RouteHopTimeout:         "Hop %d: * (RTT: %v)",
+	RouteTraceFailed:        "Route trace failed: %v",
+	PressEscToReturn:        "esc: back",
 
 	// 输入提示相关
 	EnterNewUsername: "Please enter a new username",

@@ -29,12 +29,16 @@ var zhStrings = map[StringKey]string{
 	RouteTraceAction:        "路由追踪",
 	ReturnToMainMenu:        "返回主菜单",
 	TestingLatency:          "正在测试到 %s 的延迟...",
+	TestingLatencyShort:     "正在测试...",
 	LatencyResult:           "延迟: %v",
 	LatencySummary:          "样本 %d 个 | 最小: %v 最大: %v 平均: %v",
 	TracingRoute:            "正在追踪到 %s 的路由...",
+	TracingRouteShort:       "正在追踪路由...",
 	RouteTraceResults:       "路由追踪结果:",
 	RouteHopInfo:            "跳点 %d: %s (RTT: %v)",
 	RouteHopTimeout:         "跳点 %d: * (RTT: %v)",
+	RouteTraceFailed:        "路由追踪失败: %v",
+	PressEscToReturn:        "esc: 返回",
 
 	// 输入提示相关
 	EnterNewUsername: "请输入新用户名",

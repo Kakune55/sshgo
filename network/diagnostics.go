@@ -75,7 +75,7 @@ type RouteTracer struct {
 func NewRouteTracer() *RouteTracer {
 	return &RouteTracer{
 		maxHops: 30,
-		timeout: 5 * time.Second,
+		timeout: 2 * time.Second,
 	}
 }
 

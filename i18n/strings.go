@@ -33,12 +33,16 @@ const (
 	RouteTraceAction        StringKey = "route_trace_action"
 	ReturnToMainMenu        StringKey = "return_to_main_menu"
 	TestingLatency          StringKey = "testing_latency"
+	TestingLatencyShort     StringKey = "testing_latency_short"
 	LatencyResult           StringKey = "latency_result"
 	LatencySummary          StringKey = "latency_summary"
 	TracingRoute            StringKey = "tracing_route"
+	TracingRouteShort       StringKey = "tracing_route_short"
 	RouteTraceResults       StringKey = "route_trace_results"
 	RouteHopInfo            StringKey = "route_hop_info"
 	RouteHopTimeout         StringKey = "route_hop_timeout"
+	RouteTraceFailed        StringKey = "route_trace_failed"
+	PressEscToReturn        StringKey = "press_esc_to_return"
 
 	// 输入提示相关
 	EnterNewUsername StringKey = "enter_new_username"
