@@ -277,10 +277,7 @@ func (m AppModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.WindowSizeMsg:
 		m.width = msg.Width
 		m.height = msg.Height
-		h := msg.Height - 6
-		if h < 5 {
-			h = 5
-		}
+		h := max(msg.Height, 5)
 		m.hostList.SetSize(msg.Width-4, h)
 		m.actionList.SetSize(msg.Width-4, h)
 		return m, nil
@@ -326,7 +323,7 @@ func (m AppModel) updateHostList(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
-		case "q":
+		case "q", "esc":
 			// 如果列表正在过滤中，不退出
 			if m.hostList.FilterState() == list.Filtering {
 				break
@@ -685,7 +682,7 @@ func (m AppModel) renderHostDetails() string {
 		port = "22"
 	}
 	details.WriteString("\n")
-	details.WriteString(fmt.Sprintf(i18n.T(i18n.Port), port))
+	fmt.Fprintf(&details, i18n.T(i18n.Port), port)
 	if m.selectedHost.KeyFile != "" {
 		details.WriteString("\n")
 		details.WriteString(fmt.Sprintf(i18n.T(i18n.KeyFile), m.selectedHost.KeyFile))
@@ -858,30 +855,4 @@ func RunLoop() {
 			}
 		}
 	}
-}
-
-// ShowNetworkDiagnostics 显示网络诊断（兼容旧接口）
-func ShowNetworkDiagnostics(host ssh.SSHHost) error {
-	return RunNetworkDiagnostics(host)
-}
-
-// ShowHostDetails 显示主机详情（兼容旧接口，现在在 UI 中处理）
-func ShowHostDetails(host ssh.SSHHost) {
-	fmt.Println("\n" + i18n.T(i18n.HostDetailsTitle))
-	fmt.Printf(i18n.T(i18n.HostAlias)+"\n", host.Host)
-	if host.HostName != "" {
-		fmt.Printf(i18n.T(i18n.HostName)+"\n", host.HostName)
-	}
-	if host.User != "" {
-		fmt.Printf(i18n.T(i18n.UserName)+"\n", host.User)
-	}
-	port := host.Port
-	if port == "" {
-		port = "22"
-	}
-	fmt.Printf(i18n.T(i18n.Port)+"\n", port)
-	if host.KeyFile != "" {
-		fmt.Printf(i18n.T(i18n.KeyFile)+"\n", host.KeyFile)
-	}
-	fmt.Print("====================\n\n")
 }

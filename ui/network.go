@@ -63,7 +63,7 @@ type routeTraceResultMsg struct {
 	hops []network.RouteHop
 }
 
-// 路由跳点接收消息（实时反馈用）
+// 路由跳点接收消息
 type routeHopReceivedMsg struct {
 	hop      network.RouteHop
 	hopChan  <-chan network.RouteHop
@@ -323,7 +323,7 @@ func (m NetworkModel) runLatencyTest() tea.Cmd {
 	}
 }
 
-// runRouteTrace 运行路由追踪（使用 channel 实现实时反馈）
+// runRouteTrace 运行路由追踪
 func (m NetworkModel) runRouteTrace() tea.Cmd {
 	host := m.host.HostName
 	if host == "" {
