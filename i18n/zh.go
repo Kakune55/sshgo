@@ -75,6 +75,41 @@ var zhStrings = map[StringKey]string{
 	SuccessfullyModifiedUser:  "成功将主机 '%s' 的用户名修改为 '%s'",
 	SuccessfullyModifiedPort:  "成功将主机 '%s' 的端口修改为 '%s'",
 
+	// 按键帮助文本
+	KeySelect:  "选择",
+	KeyBack:    "返回",
+	KeyQuit:    "退出",
+	KeySearch:  "搜索",
+	KeyConfirm: "确认",
+	KeyCancel:  "取消",
+
+	// UI 消息
+	NoKeyFileConfigured:    "该主机没有配置密钥文件",
+	PressAnyKeyToReturn:    "按任意键返回",
+	EnterUsernameForHost:   "输入用户名连接到 %s",
+	NoSSHHostsFound:        "未找到SSH主机配置",
+	ProgramError:           "程序运行错误: %v",
+	ConfigDeletedReloading: "配置已删除，重新加载主机列表...",
+
+	// SSH 连接错误
+	UsernameNotSet: "用户名未设置",
+	Warning:        "警告: %v",
+
+	// SSH 配置错误
+	ParseConfigError:      "解析配置文件 %s 时出错: %v",
+	ReadKnownHostsWarning: "警告: 读取known_hosts文件时出错: %v",
+	ParseTestConfigError:  "解析测试配置文件时出错: %v",
+	ReadConfigFileError:   "读取配置文件时出错: %v",
+	ReadKnownHostsError:   "读取known_hosts文件时出错: %v",
+	ReadConfigFileFailed:  "读取配置文件失败: %v",
+	WriteConfigFileFailed: "写入配置文件失败: %v",
+	ReadKnownHostsFailed:  "读取known_hosts文件失败: %v",
+	WriteKnownHostsFailed: "写入known_hosts文件失败: %v",
+
+	// 操作警告
+	DeleteHostConfigWarning: "警告: 从配置文件中删除主机配置时出错: %v",
+	DeleteKnownHostsWarning: "警告: 从known_hosts文件中删除主机记录时出错: %v",
+
 	// 其他
 	Goodbye:      "再见!",
 	ConnectingTo: "正在连接到 %s@%s...",

@@ -7,6 +7,8 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
+
+	"sshgo/i18n"
 )
 
 // GetAllConfigPaths 获取所有可能的配置文件路径
@@ -78,7 +80,7 @@ func ParseSSHConfig(configPath string) ([]SSHHost, error) {
 			if os.IsNotExist(err) {
 				continue
 			}
-			return hosts, fmt.Errorf("解析配置文件 %s 时出错: %v", path, err)
+			return hosts, fmt.Errorf("%s", i18n.TWithArgs(i18n.ParseConfigError, path, err))
 		}
 
 		// 将主机信息添加到结果中，避免重复
@@ -94,7 +96,7 @@ func ParseSSHConfig(configPath string) ([]SSHHost, error) {
 	knownHosts, err := parseKnownHosts()
 	if err != nil {
 		// 如果读取known_hosts文件出错，只打印警告信息，不中断程序
-		fmt.Printf("警告: 读取known_hosts文件时出错: %v\n", err)
+		fmt.Printf(i18n.T(i18n.ReadKnownHostsWarning)+"\n", err)
 	} else {
 		// 将known_hosts中的主机信息添加到结果中，避免重复
 		for _, host := range knownHosts {
@@ -110,7 +112,7 @@ func ParseSSHConfig(configPath string) ([]SSHHost, error) {
 		if _, err := os.Stat("test_config"); err == nil {
 			hosts, err = parseSingleConfigFile("test_config")
 			if err != nil {
-				return hosts, fmt.Errorf("解析测试配置文件时出错: %v", err)
+				return hosts, fmt.Errorf(i18n.T(i18n.ParseTestConfigError), err)
 			}
 		}
 	}
@@ -185,7 +187,7 @@ func parseSingleConfigFile(configPath string) ([]SSHHost, error) {
 	}
 
 	if err := scanner.Err(); err != nil {
-		return hosts, fmt.Errorf("读取配置文件时出错: %v", err)
+		return hosts, fmt.Errorf(i18n.T(i18n.ReadConfigFileError), err)
 	}
 
 	return hosts, nil
@@ -245,7 +247,7 @@ func parseKnownHosts() ([]SSHHost, error) {
 	}
 
 	if err := scanner.Err(); err != nil {
-		return hosts, fmt.Errorf("读取known_hosts文件时出错: %v", err)
+		return hosts, fmt.Errorf(i18n.T(i18n.ReadKnownHostsError), err)
 	}
 
 	return hosts, nil
@@ -275,7 +277,7 @@ func UpdateHostDirective(host, directive, value string) error {
 		if os.IsNotExist(err) {
 			data = []byte("")
 		} else {
-			return fmt.Errorf("读取配置文件失败: %v", err)
+			return fmt.Errorf(i18n.T(i18n.ReadConfigFileFailed), err)
 		}
 	}
 
@@ -379,7 +381,7 @@ func UpdateHostDirective(host, directive, value string) error {
 	output := strings.Join(out, "\n") + "\n"
 
 	if err := os.WriteFile(configPath, []byte(output), 0600); err != nil {
-		return fmt.Errorf("写入配置文件失败: %v", err)
+		return fmt.Errorf(i18n.T(i18n.WriteConfigFileFailed), err)
 	}
 
 	_ = directiveLower // 预留后续需要大小写归一化的扩展
@@ -396,7 +398,7 @@ func RemoveHostFromConfig(hostName string) error {
 		if os.IsNotExist(err) {
 			return nil // 文件不存在，无需操作
 		}
-		return fmt.Errorf("读取配置文件失败: %v", err)
+		return fmt.Errorf(i18n.T(i18n.ReadConfigFileFailed), err)
 	}
 
 	lines := strings.Split(string(content), "\n")
@@ -426,7 +428,7 @@ func RemoveHostFromConfig(hostName string) error {
 	output := strings.Join(newLines, "\n")
 	err = os.WriteFile(configPath, []byte(output), 0600)
 	if err != nil {
-		return fmt.Errorf("写入配置文件失败: %v", err)
+		return fmt.Errorf(i18n.T(i18n.WriteConfigFileFailed), err)
 	}
 
 	return nil
@@ -443,7 +445,7 @@ func RemoveHostFromKnownHosts(hostName string) error {
 		if os.IsNotExist(err) {
 			return nil
 		}
-		return fmt.Errorf("读取known_hosts文件失败: %v", err)
+		return fmt.Errorf(i18n.T(i18n.ReadKnownHostsFailed), err)
 	}
 
 	// 将内容转换为字符串并按行分割
@@ -496,7 +498,7 @@ func RemoveHostFromKnownHosts(hostName string) error {
 	// 写入更新后的内容到known_hosts文件
 	err = os.WriteFile(knownHostsPath, []byte(strings.Join(newLines, "\n")), 0600)
 	if err != nil {
-		return fmt.Errorf("写入known_hosts文件失败: %v", err)
+		return fmt.Errorf(i18n.T(i18n.WriteKnownHostsFailed), err)
 	}
 
 	return nil

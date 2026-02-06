@@ -78,6 +78,41 @@ const (
 	SuccessfullyModifiedUser  StringKey = "successfully_modified_user"
 	SuccessfullyModifiedPort  StringKey = "successfully_modified_port"
 
+	// 按键帮助文本
+	KeySelect  StringKey = "key_select"
+	KeyBack    StringKey = "key_back"
+	KeyQuit    StringKey = "key_quit"
+	KeySearch  StringKey = "key_search"
+	KeyConfirm StringKey = "key_confirm"
+	KeyCancel  StringKey = "key_cancel"
+
+	// UI 消息
+	NoKeyFileConfigured   StringKey = "no_key_file_configured"
+	PressAnyKeyToReturn   StringKey = "press_any_key_to_return"
+	EnterUsernameForHost  StringKey = "enter_username_for_host"
+	NoSSHHostsFound       StringKey = "no_ssh_hosts_found"
+	ProgramError          StringKey = "program_error"
+	ConfigDeletedReloading StringKey = "config_deleted_reloading"
+
+	// SSH 连接错误
+	UsernameNotSet StringKey = "username_not_set"
+	Warning        StringKey = "warning"
+
+	// SSH 配置错误
+	ParseConfigError      StringKey = "parse_config_error"
+	ReadKnownHostsWarning StringKey = "read_known_hosts_warning"
+	ParseTestConfigError  StringKey = "parse_test_config_error"
+	ReadConfigFileError   StringKey = "read_config_file_error"
+	ReadKnownHostsError   StringKey = "read_known_hosts_error"
+	ReadConfigFileFailed  StringKey = "read_config_file_failed"
+	WriteConfigFileFailed StringKey = "write_config_file_failed"
+	ReadKnownHostsFailed  StringKey = "read_known_hosts_failed"
+	WriteKnownHostsFailed StringKey = "write_known_hosts_failed"
+
+	// 操作警告
+	DeleteHostConfigWarning  StringKey = "delete_host_config_warning"
+	DeleteKnownHostsWarning  StringKey = "delete_known_hosts_warning"
+
 	// 其他
 	Goodbye      StringKey = "goodbye"
 	ConnectingTo StringKey = "connecting_to"

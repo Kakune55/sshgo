@@ -75,6 +75,41 @@ var enStrings = map[StringKey]string{
 	SuccessfullyModifiedUser:  "Successfully modified username for host '%s' to '%s'",
 	SuccessfullyModifiedPort:  "Successfully modified port for host '%s' to '%s'",
 
+	// 按键帮助文本
+	KeySelect:  "Select",
+	KeyBack:    "Back",
+	KeyQuit:    "Quit",
+	KeySearch:  "Search",
+	KeyConfirm: "Confirm",
+	KeyCancel:  "Cancel",
+
+	// UI 消息
+	NoKeyFileConfigured:    "No key file configured for this host",
+	PressAnyKeyToReturn:    "Press any key to return",
+	EnterUsernameForHost:   "Enter username to connect to %s",
+	NoSSHHostsFound:        "No SSH host configurations found",
+	ProgramError:           "Program error: %v",
+	ConfigDeletedReloading: "Configuration deleted, reloading host list...",
+
+	// SSH 连接错误
+	UsernameNotSet: "Username not set",
+	Warning:        "Warning: %v",
+
+	// SSH 配置错误
+	ParseConfigError:      "Error parsing config file %s: %v",
+	ReadKnownHostsWarning: "Warning: Error reading known_hosts file: %v",
+	ParseTestConfigError:  "Error parsing test config file: %v",
+	ReadConfigFileError:   "Error reading config file: %v",
+	ReadKnownHostsError:   "Error reading known_hosts file: %v",
+	ReadConfigFileFailed:  "Failed to read config file: %v",
+	WriteConfigFileFailed: "Failed to write config file: %v",
+	ReadKnownHostsFailed:  "Failed to read known_hosts file: %v",
+	WriteKnownHostsFailed: "Failed to write known_hosts file: %v",
+
+	// 操作警告
+	DeleteHostConfigWarning: "Warning: Error deleting host config from file: %v",
+	DeleteKnownHostsWarning: "Warning: Error deleting host from known_hosts: %v",
+
 	// 其他
 	Goodbye:      "Goodbye!",
 	ConnectingTo: "Connecting to %s@%s...",

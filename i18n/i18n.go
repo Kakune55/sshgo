@@ -3,6 +3,7 @@ package i18n
 import (
 	"fmt"
 	"os"
+	"runtime"
 	"strings"
 )
 
@@ -44,11 +45,12 @@ func detectLanguage() Language {
 		return Chinese
 	}
 
-	// Windows 上语言环境变量不统一，保留一个简单的猜测（可后续扩展）
-	if os.Getenv("OS") == "Windows_NT" {
-		// 如果用户区域未显式提供，可再看下 chcp / UI 但这里保持轻量，直接返回之前判断结果
+	// Windows 获取语言设置
+	if runtime.GOOS == "windows" {
+		if wl := detectWindowsLanguage(); wl != "" {
+			return wl
+		}
 	}
-
 	return English
 }
 

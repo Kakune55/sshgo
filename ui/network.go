@@ -9,7 +9,6 @@ import (
 	"sshgo/network"
 	"sshgo/ssh"
 
-	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/list"
 	"github.com/charmbracelet/bubbles/spinner"
 	tea "github.com/charmbracelet/bubbletea"
@@ -142,7 +141,7 @@ func (m NetworkModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch {
-		case key.Matches(msg, keys.Quit):
+		case msg.String() == "q" || msg.String() == "ctrl+c":
 			if m.state == networkStateMenu {
 				m.quitting = true
 				return m, tea.Quit

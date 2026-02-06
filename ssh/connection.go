@@ -68,7 +68,7 @@ func NeedsUsername(host SSHHost) bool {
 func ConnectToHost(host SSHHost) error {
 	// 如果没有用户名，返回错误（用户名应由 UI 层获取）
 	if host.User == "" {
-		return fmt.Errorf("用户名未设置")
+		return fmt.Errorf("%s", i18n.T(i18n.UsernameNotSet))
 	}
 
 	// 构建SSH命令
@@ -115,7 +115,7 @@ func ConnectToHostWithUser(host SSHHost, username string) error {
 	// 保存用户名到配置文件
 	err := SaveUserToConfig(host.Host, username)
 	if err != nil {
-		fmt.Printf("警告: %v\n", err)
+		fmt.Printf(i18n.T(i18n.Warning)+"\n", err)
 	}
 
 	return ConnectToHost(host)

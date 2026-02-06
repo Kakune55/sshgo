@@ -28,13 +28,13 @@ func DeleteHostConfig(host ssh.SSHHost) error {
 	// 从SSH配置文件中删除主机配置
 	err := ssh.RemoveHostFromConfig(host.Host)
 	if err != nil {
-		fmt.Printf("警告: 从配置文件中删除主机配置时出错: %v\n", err)
+		fmt.Printf(i18n.T(i18n.DeleteHostConfigWarning)+"\n", err)
 	}
 
 	// 从known_hosts文件中删除主机记录
 	err = ssh.RemoveHostFromKnownHosts(host.Host)
 	if err != nil {
-		fmt.Printf("警告: 从known_hosts文件中删除主机记录时出错: %v\n", err)
+		fmt.Printf(i18n.T(i18n.DeleteKnownHostsWarning)+"\n", err)
 	}
 
 	return nil

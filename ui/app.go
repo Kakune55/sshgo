@@ -86,31 +86,33 @@ type keyMap struct {
 	No     key.Binding
 }
 
-var keys = keyMap{
-	Enter: key.NewBinding(
-		key.WithKeys("enter"),
-		key.WithHelp("enter", "选择"),
-	),
-	Back: key.NewBinding(
-		key.WithKeys("esc"),
-		key.WithHelp("esc", "返回"),
-	),
-	Quit: key.NewBinding(
-		key.WithKeys("q", "ctrl+c"),
-		key.WithHelp("q", "退出"),
-	),
-	Search: key.NewBinding(
-		key.WithKeys("/"),
-		key.WithHelp("/", "搜索"),
-	),
-	Yes: key.NewBinding(
-		key.WithKeys("y", "Y"),
-		key.WithHelp("y", "确认"),
-	),
-	No: key.NewBinding(
-		key.WithKeys("n", "N"),
-		key.WithHelp("n", "取消"),
-	),
+func getKeys() keyMap {
+	return keyMap{
+		Enter: key.NewBinding(
+			key.WithKeys("enter"),
+			key.WithHelp("enter", i18n.T(i18n.KeySelect)),
+		),
+		Back: key.NewBinding(
+			key.WithKeys("esc"),
+			key.WithHelp("esc", i18n.T(i18n.KeyBack)),
+		),
+		Quit: key.NewBinding(
+			key.WithKeys("q", "ctrl+c"),
+			key.WithHelp("q", i18n.T(i18n.KeyQuit)),
+		),
+		Search: key.NewBinding(
+			key.WithKeys("/"),
+			key.WithHelp("/", i18n.T(i18n.KeySearch)),
+		),
+		Yes: key.NewBinding(
+			key.WithKeys("y", "Y"),
+			key.WithHelp("y", i18n.T(i18n.KeyConfirm)),
+		),
+		No: key.NewBinding(
+			key.WithKeys("n", "N"),
+			key.WithHelp("n", i18n.T(i18n.KeyCancel)),
+		),
+	}
 }
 
 // ============================================================================
@@ -573,7 +575,7 @@ func (m AppModel) handleAction(action ActionType) (tea.Model, tea.Cmd) {
 
 	case ActionDeleteKey:
 		if m.selectedHost.KeyFile == "" {
-			m.message = "该主机没有配置密钥文件"
+			m.message = i18n.T(i18n.NoKeyFileConfigured)
 			m.isError = true
 			return m, nil
 		}
@@ -694,7 +696,7 @@ func (m AppModel) renderHostDetails() string {
 	s.WriteString("\n")
 	s.WriteString(detailsBoxStyle.Render(details.String()))
 	s.WriteString("\n\n")
-	s.WriteString(helpStyle.Render("按任意键返回"))
+	s.WriteString(helpStyle.Render(i18n.T(i18n.PressAnyKeyToReturn)))
 
 	return s.String()
 }
@@ -703,11 +705,11 @@ func (m AppModel) renderHostDetails() string {
 func (m AppModel) renderConfirmDeleteKey() string {
 	var s strings.Builder
 
-	s.WriteString(warningStyle.Render("⚠ 确认删除"))
+	s.WriteString(warningStyle.Render("⚠ " + i18n.T(i18n.KeyConfirm)))
 	s.WriteString("\n\n")
 	s.WriteString(statusStyle.Render(fmt.Sprintf(i18n.T(i18n.ConfirmDeleteKey), m.selectedHost.KeyFile)))
 	s.WriteString("\n\n")
-	s.WriteString(helpStyle.Render("y: 确认删除 • n/esc: 取消"))
+	s.WriteString(helpStyle.Render("y: " + i18n.T(i18n.KeyConfirm) + " • n/esc: " + i18n.T(i18n.KeyCancel)))
 
 	return s.String()
 }
@@ -716,11 +718,11 @@ func (m AppModel) renderConfirmDeleteKey() string {
 func (m AppModel) renderConfirmDeleteConfig() string {
 	var s strings.Builder
 
-	s.WriteString(warningStyle.Render("⚠ 确认删除"))
+	s.WriteString(warningStyle.Render("⚠ " + i18n.T(i18n.KeyConfirm)))
 	s.WriteString("\n\n")
 	s.WriteString(statusStyle.Render(fmt.Sprintf(i18n.T(i18n.ConfirmDeleteConfig), m.selectedHost.Host)))
 	s.WriteString("\n\n")
-	s.WriteString(helpStyle.Render("y: 确认删除 • n/esc: 取消"))
+	s.WriteString(helpStyle.Render("y: " + i18n.T(i18n.KeyConfirm) + " • n/esc: " + i18n.T(i18n.KeyCancel)))
 
 	return s.String()
 }
@@ -731,14 +733,14 @@ func (m AppModel) renderInputUsername() string {
 
 	title := i18n.T(i18n.EnterNewUsername)
 	if m.state == stateInputConnectUsername {
-		title = fmt.Sprintf("输入用户名连接到 %s", m.selectedHost.Host)
+		title = fmt.Sprintf(i18n.T(i18n.EnterUsernameForHost), m.selectedHost.Host)
 	}
 
 	s.WriteString(titleStyle.Render(title))
 	s.WriteString("\n\n")
 	s.WriteString(inputStyle.Render(m.textInput.View()))
 	s.WriteString("\n\n")
-	s.WriteString(helpStyle.Render("enter: 确认 • esc: 取消"))
+	s.WriteString(helpStyle.Render("enter: " + i18n.T(i18n.KeyConfirm) + " • esc: " + i18n.T(i18n.KeyCancel)))
 
 	return s.String()
 }
@@ -751,7 +753,7 @@ func (m AppModel) renderInputPort() string {
 	s.WriteString("\n\n")
 	s.WriteString(inputStyle.Render(m.textInput.View()))
 	s.WriteString("\n\n")
-	s.WriteString(helpStyle.Render("enter: 确认 • esc: 取消"))
+	s.WriteString(helpStyle.Render("enter: " + i18n.T(i18n.KeyConfirm) + " • esc: " + i18n.T(i18n.KeyCancel)))
 
 	return s.String()
 }
@@ -810,14 +812,14 @@ func RunLoop() {
 	}
 
 	if len(hosts) == 0 {
-		fmt.Println("未找到SSH主机配置")
+		fmt.Println(i18n.T(i18n.NoSSHHostsFound))
 		return
 	}
 
 	for {
 		action, host, err := Run(hosts, configPath)
 		if err != nil {
-			fmt.Printf("程序运行错误: %v\n", err)
+			fmt.Printf(i18n.T(i18n.ProgramError)+"\n", err)
 			return
 		}
 
@@ -844,14 +846,14 @@ func RunLoop() {
 
 		case ActionDeleteConfig:
 			// 重新加载主机列表
-			fmt.Println("配置已删除，重新加载主机列表...")
+			fmt.Println(i18n.T(i18n.ConfigDeletedReloading))
 			hosts, err = ssh.ParseSSHConfig(configPath)
 			if err != nil {
 				fmt.Printf("%v\n", err)
 				return
 			}
 			if len(hosts) == 0 {
-				fmt.Println("未找到SSH主机配置")
+				fmt.Println(i18n.T(i18n.NoSSHHostsFound))
 				return
 			}
 		}
